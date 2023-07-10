@@ -11,8 +11,8 @@ async function bootstrap() {
     .setDescription('Nest, typeORM, Docker, Swagger test project')
     .setVersion('1.0.0')
     .build();
-  const documnet = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/api/docs', app, documnet);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('/api/docs', app, document);
 
   await app.listen(port, () => console.log(`Server started on port ${port}`));
 }

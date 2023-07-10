@@ -1,17 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-
 export class CreateUserDto {
-  /**
-   * Email
-   * @example test@test.ru
-   */
   readonly email: string;
-
-  /**
-   *
-   * @example [Alex, Antton]
-   */
   readonly name: string;
-
   readonly password: string;
+}
+
+export class EditUserDto {
+  readonly name: string;
+  readonly email: string;
 }
