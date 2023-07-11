@@ -2,10 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Post } from '../posts/post.entity';
 
 @Entity('User')
 export class User {
@@ -21,6 +23,9 @@ export class User {
   @Exclude()
   @Column({ nullable: false })
   password: string;
+
+  @OneToMany(() => Post, (post: Post) => post.author)
+  public posts: Post[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

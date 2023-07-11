@@ -13,7 +13,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(dto: signInDto): Promise<any> {
+  async signIn(dto: signInDto): Promise<{ access_token: string }> {
     const user = await this.userRepository.findOneBy({ email: dto.email });
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {

@@ -10,22 +10,30 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async deleteUser(id: number): Promise<User> {
+  async deleteUser(id: number, userID: number): Promise<void> {
     const user = await this.userRepository.findOneBy({
       id,
     });
+    const sameUser = Number(id) === userID;
     if (!user) {
-      throw new NotFoundException('user does not exist');
+      throw new NotFoundException('wrong user id');
     }
-    return await this.userRepository.remove(user);
+    if (!sameUser) {
+      throw new NotFoundException('no permission');
+    }
+    await this.userRepository.delete(userID);
   }
 
-  async editUser(id: number, dto: EditUserDto): Promise<User> {
+  async editUser(id: number, dto: EditUserDto, userID: number): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
+    const sameUser = Number(id) === userID;
     if (!user) {
-      throw new NotFoundException('user does not exist');
+      throw new NotFoundException('wrong user id');
     }
-    return await this.userRepository.save({
+    if (!sameUser) {
+      throw new NotFoundException('no permission');
+    }
+    return this.userRepository.save({
       ...user,
       name: dto.name,
       email: dto.email,
@@ -33,6 +41,6 @@ export class UserService {
   }
 
   async me(id: number): Promise<User> {
-    return await this.userRepository.findOneBy({ id });
+    return this.userRepository.findOneBy({ id });
   }
 }
