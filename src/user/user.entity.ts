@@ -5,19 +5,21 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity('User')
 export class User {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   name: string;
 
-  @Column()
+  @Column({ nullable: false, unique: true })
   email: string;
 
-  @Column()
+  @Exclude()
+  @Column({ nullable: false })
   password: string;
 
   @CreateDateColumn({ name: 'created_at' })
