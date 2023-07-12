@@ -11,7 +11,7 @@ import {
 import { AuthService } from './auth.service';
 import { AuthSignInDto } from './dto/auth-signIn.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from '../user/user.entity';
+import { User } from '../user/entities/user.entity';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { UserCreateDto } from '../user/dto/user-create.dto';
 

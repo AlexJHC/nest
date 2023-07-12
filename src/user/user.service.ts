@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from './user.entity';
+import { Injectable } from '@nestjs/common';
+import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserUpdateDto } from './dto/user-update.dto';
@@ -10,33 +10,14 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async deleteUser(id: number, userID: number): Promise<void> {
-    const user = await this.userRepository.findOneBy({
-      id,
-    });
-    const sameUser = Number(id) === userID;
-    if (!user) {
-      throw new NotFoundException('wrong user id');
-    }
-    if (!sameUser) {
-      throw new NotFoundException('no permission');
-    }
-    await this.userRepository.delete(userID);
+  async delete(id: number): Promise<void> {
+    await this.userRepository.delete(id);
   }
 
-  async editUser(
-    id: number,
-    dto: UserUpdateDto,
-    userID: number,
-  ): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id });
-    const sameUser = Number(id) === userID;
-    if (!user) {
-      throw new NotFoundException('wrong user id');
-    }
-    if (!sameUser) {
-      throw new NotFoundException('no permission');
-    }
+  async update(dto: UserUpdateDto, id: number): Promise<User> {
+    const user = await this.userRepository.findOneOrFail({
+      where: { id },
+    });
     return this.userRepository.save({
       ...user,
       name: dto.name,
@@ -44,7 +25,7 @@ export class UserService {
     });
   }
 
-  async me(id: number): Promise<User> {
+  async findOneBy(id: number): Promise<User> {
     return this.userRepository.findOneBy({ id });
   }
 }

@@ -4,12 +4,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../user/user.entity';
+import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthSignInDto } from './dto/auth-signIn.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { hashPassword } from '../util/user';
+import { hashPassword } from '../common/util/hashPassword';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { UserCreateDto } from '../user/dto/user-create.dto';
 

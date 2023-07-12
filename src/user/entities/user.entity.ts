@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Post } from '../posts/post.entity';
+import { Post } from '../../posts/entities/post.entity';
 
 @Entity('User')
 export class User {

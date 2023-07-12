@@ -3,14 +3,13 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Request,
   Put,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { UserUpdateDto } from './dto/user-update.dto';
 
@@ -22,21 +21,17 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('me')
-  async my(@Request() req): Promise<User> {
-    return this.userService.me(req.user.sub);
+  async findOneBy(@Request() { user }): Promise<User> {
+    return this.userService.findOneBy(user.sub);
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() dto: UserUpdateDto,
-    @Request() req,
-  ): Promise<any> {
-    return this.userService.editUser(id, dto, req.user.sub);
+  @Put()
+  async update(@Body() dto: UserUpdateDto, @Request() { user }): Promise<any> {
+    return this.userService.update(dto, user.sub);
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: number, @Request() req): Promise<void> {
-    return this.userService.deleteUser(id, req.user.sub);
+  @Delete()
+  async delete(@Request() { user }): Promise<void> {
+    return this.userService.delete(user.sub);
   }
 }
