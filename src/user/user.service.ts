@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ChangePasswordUserDto, EditUserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { hashPassword } from '../util/user';
 
 @Injectable()
 export class UserService {
@@ -53,8 +54,7 @@ export class UserService {
     const sameUser = Number(id) === userID;
     const user = await this.userRepository.findOneBy({ id });
     const isMatch = await bcrypt.compare(dto.oldPassword, user.password);
-    const saltOrRounds = 6;
-    const hashPass = await bcrypt.hash(dto.newPassword, saltOrRounds);
+    const hashPass = await hashPassword(dto.newPassword);
     if (!user) {
       throw new NotFoundException('wrong user id');
     }
