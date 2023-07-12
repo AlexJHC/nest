@@ -7,8 +7,9 @@ import {
   Request,
   Put,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
-import { EditUserDto } from './dto/user.dto';
+import { ChangePasswordUserDto, EditUserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from './user.entity';
@@ -33,6 +34,15 @@ export class UserController {
     @Request() req,
   ): Promise<any> {
     return this.userService.editUser(id, dto, req.user.sub);
+  }
+
+  @Patch('password/:id')
+  async changePassword(
+    @Param('id') id: number,
+    @Body() dto: ChangePasswordUserDto,
+    @Request() req,
+  ): Promise<any> {
+    return this.userService.changeUserPassword(id, dto, req.user.sub);
   }
 
   @Delete(':id')
