@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './post.entity';
@@ -10,55 +10,44 @@ export class PostsService {
     @InjectRepository(Post) private postRepository: Repository<Post>,
   ) {}
 
-  async createPost(dto: CreatePostDto, author: { id: number }): Promise<Post> {
-    const newPost = await this.postRepository.create({
+  async create(dto: CreatePostDto, author: { id: number }): Promise<Post> {
+    return this.postRepository.save({
       ...dto,
       author,
     });
-    await this.postRepository.save(newPost);
-    return newPost;
   }
 
-  async getAllPosts(): Promise<Post[]> {
+  async findAll(): Promise<Post[]> {
     return this.postRepository.find({
       relations: ['author'],
       select: { author: { name: true } },
     });
   }
 
-  async getPost(id: number) {
-    const post = await this.postRepository.findOne({
+  async findOneOrFail(id: number) {
+    return this.postRepository.findOneOrFail({
       where: { id },
       select: {
         author: { name: true },
       },
       relations: ['author'],
     });
-    if (!post) {
-      throw new NotFoundException('post does not exist');
-    }
-    return post;
   }
 
-  async updatePost(id: number, dto: CreatePostDto, userId: number) {
-    const post = await this.postRepository.findOne({
+  async update(id: number, dto: CreatePostDto, userId: number) {
+    const post = await this.postRepository.findOneOrFail({
       where: { id, author: { id: userId } },
     });
-    if (!post) {
-      throw new NotFoundException('post does not exist or no permission');
-    }
-    await this.postRepository.update(id, {
-      body: dto.body,
-    });
+    post &&
+      (await this.postRepository.update(id, {
+        body: dto.body,
+      }));
   }
 
-  async deletePost(id: number, userId: number) {
-    const post = await this.postRepository.findOne({
+  async delete(id: number, userId: number) {
+    const post = await this.postRepository.findOneOrFail({
       where: { id, author: { id: userId } },
     });
-    if (!post) {
-      throw new NotFoundException('post does not exist or no permission');
-    }
-    await this.postRepository.delete(post);
+    post && (await this.postRepository.delete(post));
   }
 }

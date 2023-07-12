@@ -8,7 +8,6 @@ async function bootstrap() {
   const port = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule);
   const { httpAdapter } = app.get(HttpAdapterHost);
-
   const config = new DocumentBuilder()
     .setTitle('Nest')
     .setDescription('Nest, typeORM, Docker, Swagger test project')
@@ -16,7 +15,12 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/api', app, document);
+  SwaggerModule.setup('/api', app, document, {
+    swaggerOptions: {
+      apisSorter: 'alpha',
+      tagsSorter: 'alpha',
+    },
+  });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ExceptionsFilter(httpAdapter));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));

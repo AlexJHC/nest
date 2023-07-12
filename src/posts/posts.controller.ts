@@ -23,19 +23,19 @@ export class PostsController {
 
   @Post()
   async createPost(@Body() dto: CreatePostDto, @Request() req) {
-    return this.postsService.createPost(dto, {
+    return this.postsService.create(dto, {
       id: req.user.sub,
     });
   }
 
   @Get()
   async getAllPosts() {
-    return this.postsService.getAllPosts();
+    return this.postsService.findAll();
   }
 
   @Get(':id')
   async getPost(@Param('id') id: number) {
-    return this.postsService.getPost(id);
+    return this.postsService.findOneOrFail(id);
   }
 
   @Patch(':id')
@@ -44,11 +44,11 @@ export class PostsController {
     @Body() dto: CreatePostDto,
     @Request() req,
   ) {
-    return this.postsService.updatePost(id, dto, req.user.sub);
+    return this.postsService.update(id, dto, req.user.sub);
   }
 
   @Delete(':id')
   async deletePost(@Param('id') id: number, @Request() req) {
-    return this.postsService.deletePost(id, req.user.sub);
+    return this.postsService.delete(id, req.user.sub);
   }
 }
