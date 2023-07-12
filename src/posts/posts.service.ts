@@ -34,20 +34,20 @@ export class PostsService {
     });
   }
 
-  async update(id: number, dto: PostCreateDto, userId: number) {
-    const post = await this.postRepository.findOneOrFail({
-      where: { id, author: { id: userId } },
+  async update(id: number, dto: PostCreateDto, userID: number) {
+    await this.postRepository.findOneOrFail({
+      where: { id, author: { id: userID } },
     });
-    post &&
-      (await this.postRepository.update(id, {
-        body: dto.body,
-      }));
+
+    return this.postRepository.update(id, {
+      body: dto.body,
+    });
   }
 
-  async delete(id: number, userId: number) {
-    const post = await this.postRepository.findOneOrFail({
-      where: { id, author: { id: userId } },
+  async delete(id: number, userID: number) {
+    await this.postRepository.findOneOrFail({
+      where: { id, author: { id: userID } },
     });
-    post && (await this.postRepository.delete(post));
+    await this.postRepository.delete(id);
   }
 }
