@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import { EditUserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserUpdateDto } from './dto/user-update.dto';
 
 @Injectable()
 export class UserService {
@@ -24,7 +24,11 @@ export class UserService {
     await this.userRepository.delete(userID);
   }
 
-  async editUser(id: number, dto: EditUserDto, userID: number): Promise<User> {
+  async editUser(
+    id: number,
+    dto: UserUpdateDto,
+    userID: number,
+  ): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
     const sameUser = Number(id) === userID;
     if (!user) {

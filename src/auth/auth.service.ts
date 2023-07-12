@@ -6,11 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { Repository } from 'typeorm';
-import { signInDto } from './dto/auth.dto';
+import { AuthSignInDto } from './dto/auth-signIn.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { ChangePasswordUserDto, UserDto } from '../user/dto/user.dto';
 import { hashPassword } from '../util/user';
+import { AuthRegistrationDto } from './dto/auth-registration.dto';
+import { UserCreateDto } from '../user/dto/user-create.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(dto: signInDto): Promise<{ access_token: string }> {
+  async signIn(dto: AuthSignInDto): Promise<{ access_token: string }> {
     const user = await this.userRepository.findOneBy({ email: dto.email });
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
@@ -31,7 +32,7 @@ export class AuthService {
     };
   }
 
-  async registration(dto: UserDto): Promise<User> {
+  async registration(dto: UserCreateDto): Promise<User> {
     const hashPass = await hashPassword(dto.password);
     return this.userRepository.save({
       email: dto.email,
@@ -42,7 +43,7 @@ export class AuthService {
 
   async changeUserPassword(
     id: number,
-    dto: ChangePasswordUserDto,
+    dto: AuthRegistrationDto,
     userID: number,
   ) {
     const sameUser = Number(id) === userID;

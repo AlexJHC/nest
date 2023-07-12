@@ -12,7 +12,7 @@ import {
 import { PostsService } from './posts.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CreatePostDto } from './dto/post.dto';
+import { PostCreateDto } from './dto/post-create.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -22,7 +22,7 @@ export class PostsController {
   constructor(private postsService: PostsService) {}
 
   @Post()
-  async createPost(@Body() dto: CreatePostDto, @Request() req) {
+  async createPost(@Body() dto: PostCreateDto, @Request() req) {
     return this.postsService.create(dto, {
       id: req.user.sub,
     });
@@ -41,7 +41,7 @@ export class PostsController {
   @Patch(':id')
   async updatePost(
     @Param('id') id: number,
-    @Body() dto: CreatePostDto,
+    @Body() dto: PostCreateDto,
     @Request() req,
   ) {
     return this.postsService.update(id, dto, req.user.sub);

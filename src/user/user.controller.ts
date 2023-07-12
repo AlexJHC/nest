@@ -8,11 +8,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { EditUserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from './user.entity';
 import { AuthGuard } from '../auth/auth.guard';
+import { UserUpdateDto } from './dto/user-update.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -29,7 +29,7 @@ export class UserController {
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() dto: EditUserDto,
+    @Body() dto: UserUpdateDto,
     @Request() req,
   ): Promise<any> {
     return this.userService.editUser(id, dto, req.user.sub);
