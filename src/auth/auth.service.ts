@@ -41,21 +41,10 @@ export class AuthService {
     });
   }
 
-  async changeUserPassword(
-    id: number,
-    dto: AuthRegistrationDto,
-    userID: number,
-  ) {
-    const sameUser = Number(id) === userID;
-    const user = await this.userRepository.findOneBy({ id });
+  async changeUserPassword(dto: AuthRegistrationDto, id: number) {
+    const user = await this.userRepository.findOneOrFail({ where: { id } });
     const isMatch = await bcrypt.compare(dto.oldPassword, user.password);
     const hashPass = await hashPassword(dto.newPassword);
-    if (!user) {
-      throw new NotFoundException('wrong user id');
-    }
-    if (!sameUser) {
-      throw new NotFoundException('no permission');
-    }
     if (!isMatch) {
       throw new NotFoundException('old password not match');
     }

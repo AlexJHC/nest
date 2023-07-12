@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
-  Param,
   Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -31,12 +30,11 @@ export class AuthController {
     return this.authService.registration(userDto);
   }
 
-  @Patch('password/:id')
+  @Patch('password')
   async changePassword(
-    @Param('id') id: number,
     @Body() dto: AuthRegistrationDto,
-    @Request() req,
+    @Request() { user },
   ): Promise<any> {
-    return this.authService.changeUserPassword(id, dto, req.user.sub);
+    return this.authService.changeUserPassword(dto, user.sub);
   }
 }
