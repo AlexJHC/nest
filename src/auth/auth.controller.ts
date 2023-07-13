@@ -37,4 +37,9 @@ export class AuthController {
   ): Promise<any> {
     return this.authService.changeUserPassword(dto, user.sub);
   }
+
+  // @Get('token')
+  // async getToken() {
+  //   return this.authService.emailConfirmation();
+  // }
 }

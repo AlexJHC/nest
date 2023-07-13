@@ -12,12 +12,14 @@ import * as bcrypt from 'bcrypt';
 import { hashPassword } from '../common/util/hashPassword';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { UserCreateDto } from '../user/dto/user-create.dto';
+import { EmailsService } from '../common/services/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private emailsService: EmailsService,
   ) {}
 
   async signIn(dto: AuthSignInDto): Promise<{ access_token: string }> {
@@ -34,11 +36,14 @@ export class AuthService {
 
   async registration(dto: UserCreateDto): Promise<User> {
     const hashPass = await hashPassword(dto.password);
-    return this.userRepository.save({
+    const user = await this.userRepository.save({
       email: dto.email,
       name: dto.name,
       password: hashPass,
     });
+    const payload = { id: user.id, username: user.name };
+    await this.emailConfirmation(payload);
+    return user;
   }
 
   async changeUserPassword(dto: AuthRegistrationDto, id: number) {
@@ -52,5 +57,16 @@ export class AuthService {
       throw new NotFoundException('confirm password not match to password');
     }
     await this.userRepository.update(id, { password: hashPass });
+  }
+
+  async emailConfirmation(payload: { id: number; username: string }) {
+    const recipient = 'shchepkin2021@gmail.com';
+    const token = this.jwtService.sign(payload, { expiresIn: '24h' });
+    const email = {
+      message: token,
+      subject: 'test',
+      recipient,
+    };
+    await this.emailsService.sendEmail(email);
   }
 }
