@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
-import { configAWS } from './constants';
 
 interface EmailParams {
   message: string;
@@ -10,12 +9,16 @@ interface EmailParams {
 
 @Injectable()
 export class EmailsService {
-  private readonly SES = new AWS.SES(configAWS);
+  private readonly SES = new AWS.SES({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_ACCESS_SECRET,
+    region: process.env.AWS_REGION,
+  });
   private readonly logger = new Logger(EmailsService.name);
 
   sendEmail({ message, subject, recipient }: EmailParams) {
     const params: AWS.SES.SendEmailRequest = {
-      Source: configAWS.email,
+      Source: process.env.AWS_ROOT_EMAIL,
       Destination: {
         ToAddresses: Array.isArray(recipient) ? recipient : [recipient],
       },

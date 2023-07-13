@@ -13,6 +13,7 @@ import { hashPassword } from '../common/util/hashPassword';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { UserCreateDto } from '../user/dto/user-create.dto';
 import { EmailsService } from '../common/services/email.service';
+import { emailTemplate } from '../common/util/emailTemplate';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +43,7 @@ export class AuthService {
       password: hashPass,
     });
     const payload = { id: user.id, username: user.name };
-    await this.emailConfirmation(payload);
+    await this.sendEmail(payload);
     return user;
   }
 
@@ -59,14 +60,23 @@ export class AuthService {
     await this.userRepository.update(id, { password: hashPass });
   }
 
-  async emailConfirmation(payload: { id: number; username: string }) {
-    const recipient = 'shchepkin2021@gmail.com';
+  async sendEmail(payload: { id: number; username: string }) {
+    const { email } = await this.userRepository.findOneOrFail({
+      where: { id: payload.id },
+    });
+
     const token = this.jwtService.sign(payload, { expiresIn: '24h' });
-    const email = {
-      message: token,
-      subject: 'test',
-      recipient,
+    const emailObj = {
+      message: emailTemplate(payload.username, token),
+      subject: 'Email verification',
+      recipient: email,
     };
-    await this.emailsService.sendEmail(email);
+    await this.emailsService.sendEmail(emailObj);
+  }
+
+  async confirmEmail(token: string) {
+    const { id } = this.jwtService.verify(token);
+    await this.userRepository.findOneOrFail({ where: { id } });
+    return this.userRepository.update(id, { isValid: true });
   }
 }

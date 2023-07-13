@@ -1,0 +1,2 @@
+export const emailTemplate = (UserName: string, token: string) =>
+  `<div style="display: block;"><h1>Hello ${UserName}</h1><p>Please verify your email address from Itraveljerusalem.com</p><a href="http://localhost:5000/auth/email-confirmation?token=${token}" target="_blank" style="background-color: #e4327f; padding: 10px 15px; text-decoration: none; color: white; font-size: 35px; border-radius: 10px;">Verify email</a></div>`;

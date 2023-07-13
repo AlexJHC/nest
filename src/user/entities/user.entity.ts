@@ -2,12 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Post } from '../../posts/entities/post.entity';
+import File from '../../files/entities/file.entity';
 
 @Entity('User')
 export class User {
@@ -32,4 +35,14 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @Column({ default: false })
+  isValid: boolean;
+
+  @JoinColumn()
+  @OneToOne(() => File, {
+    eager: true,
+    nullable: true,
+  })
+  public avatar?: File;
 }

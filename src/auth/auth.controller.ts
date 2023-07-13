@@ -6,6 +6,8 @@ import {
   HttpStatus,
   Patch,
   Request,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthSignInDto } from './dto/auth-signIn.dto';
@@ -38,8 +40,8 @@ export class AuthController {
     return this.authService.changeUserPassword(dto, user.sub);
   }
 
-  // @Get('token')
-  // async getToken() {
-  //   return this.authService.emailConfirmation();
-  // }
+  @Get('email-confirmation')
+  async confirmEmail(@Query() { token }) {
+    return this.authService.confirmEmail(token);
+  }
 }
