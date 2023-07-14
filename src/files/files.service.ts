@@ -7,14 +7,14 @@ import { randomUUID } from 'crypto';
 
 @Injectable()
 export class FilesService {
+  private readonly s3 = new S3();
   constructor(
     @InjectRepository(File)
     private publicFilesRepository: Repository<File>,
   ) {}
 
   async uploadPublicFile(dataBuffer: Buffer, filename: string): Promise<File> {
-    const s3 = new S3();
-    const uploadResult = await s3
+    const uploadResult = await this.s3
       .upload({
         Bucket: process.env.AWS_BUCKET,
         Body: dataBuffer,
@@ -34,8 +34,7 @@ export class FilesService {
     const file = await this.publicFilesRepository.findOne({
       where: { id: fileId },
     });
-    const s3 = new S3();
-    await s3
+    await this.s3
       .deleteObject({
         Bucket: process.env.AWS_BUCKET,
         Key: file.key,
