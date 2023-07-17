@@ -39,6 +39,10 @@ export class UserService {
       filename,
     );
     const user = await this.findOneOrFail(userId);
+    const fileId = user.avatar?.id;
+    if (fileId) {
+      await this.filesService.deletePublicFile(fileId);
+    }
     await this.userRepository.update(userId, {
       ...user,
       avatar,
