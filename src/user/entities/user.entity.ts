@@ -11,6 +11,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { Post } from '../../posts/entities/post.entity';
 import File from '../../files/entities/file.entity';
+import PrivateFile from '../../files-private/entities/private-files.entity';
 
 @Entity('User')
 export class User {
@@ -45,4 +46,7 @@ export class User {
     nullable: true,
   })
   public avatar?: File;
+
+  @OneToMany(() => PrivateFile, (file: PrivateFile) => file.owner)
+  public files: PrivateFile[];
 }

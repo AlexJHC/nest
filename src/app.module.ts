@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './posts/posts.module';
 import { CommonModule } from './common/common.module';
 import { FilesModule } from './files/files.module';
+import { FilesPrivateModule } from './files-private/files-private.module';
 
 @Module({
   controllers: [],
@@ -29,6 +30,7 @@ import { FilesModule } from './files/files.module';
     PostsModule,
     CommonModule,
     FilesModule,
+    FilesPrivateModule,
   ],
 })
 export class AppModule {}

@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ExceptionsFilter } from './http-exception.filter';
 import { config } from 'aws-sdk';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const port = process.env.PORT || 5000;
@@ -20,16 +21,18 @@ async function bootstrap() {
     swaggerOptions: {
       apisSorter: 'alpha',
       tagsSorter: 'alpha',
+      persistAuthorization: true,
     },
   });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ExceptionsFilter(httpAdapter));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
+  const configService = app.get(ConfigService);
   config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_ACCESS_SECRET,
-    region: process.env.AWS_REGION,
+    accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
+    secretAccessKey: configService.get('AWS_ACCESS_SECRET'),
+    region: configService.get('AWS_REGION'),
   });
 
   await app.listen(port, () => console.log(`Server started on port ${port}`));

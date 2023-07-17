@@ -9,6 +9,9 @@ import {
   UseInterceptors,
   UploadedFile,
   Post,
+  Param,
+  Res,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -16,7 +19,7 @@ import { User } from './entities/user.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
+import { Express, Response } from 'express';
 import { ApiFile } from '../common/util/ApiFile';
 
 @ApiTags('User')
@@ -52,5 +55,35 @@ export class UserController {
   @Delete('avatar')
   async deleteAvatar(@Request() { user }): Promise<void> {
     return this.userService.deleteAvatar(user.sub);
+  }
+
+  @Post('files')
+  @ApiConsumes('multipart/form-data')
+  @ApiFile()
+  @UseInterceptors(FileInterceptor('file'))
+  async addPrivateFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() { user },
+  ) {
+    return this.userService.addPrivateFile(
+      user.sub,
+      file.buffer,
+      file.originalname,
+    );
+  }
+
+  @Get('files/:id')
+  async getPrivateFile(
+    @Request() { user },
+    @Param('id', new ParseIntPipe()) id: number,
+    @Res() res: Response,
+  ) {
+    const file = await this.userService.getPrivateFile(user.sub, id);
+    file.stream.pipe(res);
+  }
+
+  @Get('files')
+  async getAllPrivateFiles(@Request() { user }) {
+    return this.userService.getAllPrivateFiles(user.sub);
   }
 }
