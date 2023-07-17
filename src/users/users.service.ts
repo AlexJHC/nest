@@ -13,36 +13,32 @@ export class UsersService {
     private readonly postsRepository: Repository<Posts>,
   ) {}
 
+  getQueryUser() {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .orderBy('user.country', 'ASC');
+  }
+
+  getQueryPost() {
+    return this.postsRepository.createQueryBuilder('post');
+  }
+
   async getAllUsers(page = 1, perPage = 50) {
     const skip = (page - 1) * perPage;
 
-    return this.usersRepository
-      .createQueryBuilder('user')
-      .orderBy('user.country', 'ASC')
-      .offset(skip)
-      .limit(perPage)
-      .getMany();
+    return this.getQueryUser().offset(skip).limit(perPage).getMany();
   }
 
-  async getUsersByCountries(): Promise<{ [country: string]: number }> {
-    const users = await this.usersRepository
-      .createQueryBuilder('user')
-      .orderBy('user.country', 'ASC')
-      .getMany();
-
-    return users.reduce((groupedUsers, user) => {
-      if (!groupedUsers[user.country]) {
-        groupedUsers[user.country] = 0;
-      }
-      ++groupedUsers[user.country];
-      return groupedUsers;
-    }, {});
+  async getUsersByCountries() {
+    return this.getQueryUser()
+      .select('user.country', 'country')
+      .addSelect('COUNT(user.id)', 'userCount')
+      .groupBy('user.country')
+      .getRawMany();
   }
 
-  async getUsersBySubscribers(subscribers: number): Promise<Users[]> {
-    return this.usersRepository
-      .createQueryBuilder('user')
-      .orderBy('user.country', 'ASC')
+  async getUsersBySubscribers(subscribers: number) {
+    return this.getQueryUser()
       .where('user.subscribers = :subscribers', { subscribers })
       .getMany();
   }
@@ -51,35 +47,26 @@ export class UsersService {
     subscribers: number,
     country: EUsersCountry,
   ): Promise<Users[]> {
-    return this.usersRepository
-      .createQueryBuilder('user')
-      .orderBy('user.country', 'ASC')
+    return this.getQueryUser()
       .where('user.subscribers = :subscribers', { subscribers })
       .andWhere('user.country = :country', { country })
       .getMany();
   }
 
-  async findUserPostsByBodyText(bodyText: string): Promise<Posts[]> {
-    return this.postsRepository
-      .createQueryBuilder('post')
+  async findUserPostsByBodyText(bodyText: string) {
+    return this.getQueryPost()
       .innerJoinAndSelect('post.user', 'user')
       .where('post.body LIKE :bodyText', { bodyText: `%${bodyText}%` })
       .getMany();
   }
 
-  async countUserPostsByBodyText(bodyText: string): Promise<any> {
-    const posts = await this.postsRepository
-      .createQueryBuilder('post')
+  async countUserPostsByBodyText(bodyText: string) {
+    return this.getQueryPost()
       .innerJoinAndSelect('post.user', 'user')
       .where('post.body LIKE :bodyText', { bodyText: `%${bodyText}%` })
-      .getMany();
-
-    return posts.reduce((groupedUsers, post) => {
-      if (!groupedUsers[post.user.country]) {
-        groupedUsers[post.user.country] = 0;
-      }
-      ++groupedUsers[post.user.country];
-      return groupedUsers;
-    }, {});
+      .select('user.country', 'country')
+      .addSelect('COUNT(user.id)', 'userCount')
+      .groupBy('user.country')
+      .getRawMany();
   }
 }
