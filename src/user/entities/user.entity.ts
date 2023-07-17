@@ -13,7 +13,7 @@ import { Post } from '../../posts/entities/post.entity';
 import File from '../../files/entities/file.entity';
 import PrivateFile from '../../files-private/entities/private-files.entity';
 
-@Entity('User')
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;

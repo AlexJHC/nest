@@ -7,6 +7,7 @@ import { PostsModule } from './posts/posts.module';
 import { CommonModule } from './common/common.module';
 import { FilesModule } from './files/files.module';
 import { FilesPrivateModule } from './files-private/files-private.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   controllers: [],
@@ -23,7 +24,7 @@ import { FilesPrivateModule } from './files-private/files-private.module';
       password: process.env.PG_PASSWORD,
       database: process.env.PG_BD,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+      synchronize: false,
     }),
     UserModule,
     AuthModule,
@@ -31,6 +32,7 @@ import { FilesPrivateModule } from './files-private/files-private.module';
     CommonModule,
     FilesModule,
     FilesPrivateModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

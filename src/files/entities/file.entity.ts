@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('Avatars')
+@Entity('avatars')
 class File {
   @PrimaryGeneratedColumn()
   public id: number;
