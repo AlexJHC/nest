@@ -39,7 +39,7 @@ export class UsersService {
 
   async getUsersBySubscribers(subscribers: number) {
     return this.getQueryUser()
-      .where('user.subscribers = :subscribers', { subscribers })
+      .where('user.subscribers >= :subscribers', { subscribers })
       .getMany();
   }
 
@@ -48,7 +48,7 @@ export class UsersService {
     country: EUsersCountry,
   ): Promise<Users[]> {
     return this.getQueryUser()
-      .where('user.subscribers = :subscribers', { subscribers })
+      .where('user.subscribers >= :subscribers', { subscribers })
       .andWhere('user.country = :country', { country })
       .getMany();
   }
@@ -68,5 +68,13 @@ export class UsersService {
       .addSelect('COUNT(user.id)', 'userCount')
       .groupBy('user.country')
       .getRawMany();
+  }
+
+  async findPostsWithRepeatedSymbol(symbol: string): Promise<Posts[]> {
+    return this.getQueryPost()
+      .where(`post.body LIKE CONCAT('%', :symbol)`, {
+        symbol,
+      })
+      .getMany();
   }
 }

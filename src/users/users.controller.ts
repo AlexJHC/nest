@@ -45,4 +45,9 @@ export class UsersController {
   async countUserPostsByBodyText(@Query('bodyText') bodyText: string) {
     return this.usersService.countUserPostsByBodyText(bodyText);
   }
+
+  @Get('posts-repeated')
+  async findPostsWithRepeatedSymbol(@Query('symbol') symbol: string) {
+    return this.usersService.findPostsWithRepeatedSymbol(symbol);
+  }
 }
