@@ -1,15 +1,28 @@
-FROM node:18.16.1
+FROM node:18-alpine as builder
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
+COPY --chown=node:node yarn.lock ./
 
 RUN yarn
 
-COPY . .
+COPY --chown=node:node . .
 
-COPY ./dist ./dist
+RUN yarn build
 
-CMD ["yarn", "remove", "bcrypt"]
-CMD ["yarn", "add", "bcrypt"]
-CMD ["yarn", "run", "start:dev"]
+USER node
+###
+
+FROM node:18-alpine as production
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node --from=builder /usr/src/app/dist dist
+COPY --chown=node:node --from=builder /usr/src/app/package*.json ./
+COPY --chown=node:node --from=builder /usr/src/app/yarn.lock ./
+
+RUN yarn install --production
+RUN yarn cache clean
+
+CMD yarn start:prod
