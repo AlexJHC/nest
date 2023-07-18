@@ -70,11 +70,16 @@ export class UsersService {
       .getRawMany();
   }
 
-  async findPostsWithRepeatedSymbol(symbol: string): Promise<Posts[]> {
+  async findPostsWithRepeatedSymbol(character: string) {
     return this.getQueryPost()
-      .where(`post.body LIKE CONCAT('%', :symbol)`, {
-        symbol,
-      })
-      .getMany();
+      .leftJoinAndSelect('post.user', 'user')
+      .select('post.id, post.body')
+      .addSelect('user.id')
+      .setParameters({ character })
+      .having(
+        `SUM(LENGTH(post.body) - LENGTH(REPLACE(post.body, :character, '')))/LENGTH(:character) > 2`,
+      )
+      .groupBy('user.id, post.id')
+      .getRawMany();
   }
 }
