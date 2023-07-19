@@ -24,7 +24,7 @@ import { UsersModule } from './users/users.module';
       password: process.env.PG_PASSWORD,
       database: process.env.PG_BD,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false,
+      synchronize: true,
     }),
     UserModule,
     AuthModule,
